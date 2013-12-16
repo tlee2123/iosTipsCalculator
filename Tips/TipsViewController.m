@@ -7,6 +7,7 @@
 //
 
 #import "TipsViewController.h"
+#import "SettingViewController.h"
 
 @interface TipsViewController ()
 
@@ -38,15 +39,27 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"test");
     [super viewDidLoad];
     [self.tipControl addTarget:self action:@selector(calculateTipForControl:) forControlEvents:UIControlEventValueChanged];
-    self.tipControl.selectedSegmentIndex = 1;
     self.amountTextField.delegate = self;
     self.amountTextField.text = @"";
     self.tipLabel.text = @"";
     self.totalLabel.text = @"";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(onSettingsButton)];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSInteger index = [defaults integerForKey:@"defaultPercent"];
+    self.tipControl.selectedSegmentIndex = index;
 
 }
+
+- (void)viewWillAppear:(BOOL)animated {
+    NSLog(@"tip view will appear");
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSInteger index = [defaults integerForKey:@"defaultPercent"];
+    self.tipControl.selectedSegmentIndex = index;
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -65,6 +78,7 @@
     [self calculateTip:tip];
     self.navigationItem.rightBarButtonItem = nil;
     [self.view endEditing:YES];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStylePlain target:self action:@selector(onSettingsButton)];
 }
 
 -(void)calculateTip:(float) tip {
@@ -73,6 +87,11 @@
     self.tipLabel.text = [NSString stringWithFormat:@"$%.2f", tipAmount];
     float totalAmount = amount + tipAmount;
     self.totalLabel.text = [NSString stringWithFormat:@"$%.2f", totalAmount];
+}
+
+-(void)onSettingsButton {
+    NSLog(@"Setting button touched");
+    [self.navigationController pushViewController:[[SettingViewController alloc] init] animated:YES];
 }
 
 
@@ -88,6 +107,8 @@
     self.amountTextField.text = [NSString stringWithFormat:@"$%@", self.amountTextField.text];
     return YES;
 }
+
+
 
 
 
